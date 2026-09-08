@@ -19,8 +19,10 @@
   .scene{
     width:min(94vw,980px);
     perspective:1800px;
-    display:grid;
-    place-items:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:clamp(14px,2.2vw,22px);
   }
 
   .card-shell{
@@ -159,6 +161,38 @@
   .contact-link:active{background:rgba(255,255,255,.26);transform:scale(.988)}
   .contact-link:focus-visible{box-shadow:0 0 0 3px rgba(26,49,79,.36),0 0 0 6px rgba(255,255,255,.8)}
 
+  .save-contact{
+    width:min(72%,320px);
+    min-height:52px;
+    border:1px solid rgba(26,49,79,.12);
+    border-radius:999px;
+    background:var(--yellow);
+    color:var(--navy);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:12px 22px;
+    font-size:clamp(14px,1.8vw,18px);
+    font-weight:800;
+    letter-spacing:.01em;
+    box-shadow:0 10px 24px rgba(26,49,79,.13);
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+    transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+  }
+  .save-contact svg{width:20px;height:20px;flex:0 0 auto}
+  @media (hover:hover) and (pointer:fine){
+    .save-contact:hover{
+      transform:translateY(-2px);
+      filter:brightness(1.025);
+      box-shadow:0 13px 28px rgba(26,49,79,.17);
+    }
+  }
+  .save-contact:active{transform:scale(.985)}
+  .save-contact:focus-visible{outline:3px solid rgba(26,49,79,.34);outline-offset:3px}
+
 
   .flip-control{
     position:absolute;
@@ -187,6 +221,8 @@
     .card-shell{border-radius:14px}
     .contact-link{left:4%;width:39%}
     .contact-link::after{display:none}
+    .save-contact{width:min(86%,320px);min-height:50px}
+  }
 
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation:none!important;transition:none!important}
@@ -225,6 +261,8 @@
          rel="noopener noreferrer"
          aria-label="Open Missrah website"
          title="Open www.Missrah.com"></a>
+
+
     </div>
 
     <div class="edge-light" aria-hidden="true"></div>
@@ -236,6 +274,19 @@
       </svg>
     </button>
   </section>
+
+  <button class="save-contact"
+          id="saveContact"
+          type="button"
+          aria-label="Save Rakan Al Jumah to contacts"
+          title="Save Contact">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M4.8 20c.7-3.4 3.2-5.4 7.2-5.4 2.1 0 3.9.6 5.2 1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M19 15v6M16 18h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <span>Save Contact</span>
+  </button>
 </main>
 
 <script>
@@ -276,6 +327,35 @@
         window.location.href = link.dataset.mobileHref;
       }
     });
+  });
+
+  const saveContact = document.getElementById('saveContact');
+  saveContact.addEventListener('click', () => {
+    if (timer) { clearTimeout(timer); timer = null; }
+
+    const vcard = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      'N:Al Jumah;Rakan;;;',
+      'FN:Rakan Al Jumah',
+      'ORG:Missrah',
+      'TITLE:Brand & Experience Manager',
+      'TEL;TYPE=CELL,VOICE:+966543719444',
+      'EMAIL;TYPE=INTERNET:RA@Missrah.com',
+      'URL:https://www.Missrah.com/',
+      'END:VCARD'
+    ].join('\r\n');
+
+    const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'Rakan-Al-Jumah.vcf';
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1500);
   });
 })();
 </script>
